@@ -16,7 +16,7 @@ namespace TextFunction
 {
     public static class HackMcr
     {
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
@@ -64,24 +64,28 @@ namespace TextFunction
                 client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re giphin about {searchKeywords}");
         }
 
-        public static void SendSlackMessage(HttpClient client, string message, string searchKeywords)
+        public static async Task SendSlackMessage(HttpClient client, string message, string searchKeywords)
         {
             var giphyManager = new GiphyManager();
-            var objGiphy = giphyManager.RunAsync(message).Result;
-
-            var giphySlackMessage = new SlackMessage
+            var giphy = await giphyManager.RunAsync(message);
+            if (giphy.data.Any())
             {
-                text = message,
-                attachments = new List<Attachment>
-                {
-                    new Attachment
-                    {
-                        ImageUrl = new Uri($"https://{objGiphy.data.FirstOrDefault().url}")
-                    }
-                }
-            };
+                var datum = giphy.data.FirstOrDefault();
+                var imageUrl = datum.images.original.url;
 
-            client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
+                var giphySlackMessage = new SlackMessage
+                {
+                    text = message,
+                    attachments = new List<Attachment> { new Attachment
+                        {
+                            Text = message,                            
+                            ImageUrl = new Uri(imageUrl)
+                        }
+                    }
+                };
+
+                await client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
+            }
         }
 
         public static async void SendSlackFile(string message, string searchKeywords)
@@ -109,7 +113,7 @@ namespace TextFunction
 
             var soundSlackMessage = new SlackFileUpload
             {
-                token = "xoxp-465245447568-465981698178-465832627924-3661482ff2516e5c2141553762a34c4e",
+                token = "xoxp-465245447568-465981698178-465907776675-f387ae03163e674dd443902cae1b0c93",
                 channels = "CDP77D8JC",
                 filename = "test.mp3",
                 filetype = "mp3"
