@@ -16,8 +16,7 @@ namespace TextFunction
 {
     public static class HackMcr
     {
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
-        private static string _slackFileWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
@@ -54,6 +53,7 @@ namespace TextFunction
             SendTextMessage(client, content, searchKeywords);
             SendSoundTextMessage(client, content, searchKeywords);
             SendGiphyTextMessage(client,content,searchKeywords);
+            SendSlackMessage(client, content, searchKeywords);
 
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
@@ -65,7 +65,7 @@ namespace TextFunction
                 client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re giphin about {searchKeywords}");
         }
 
-        public static void SendSoundTextMessage(HttpClient client, string message, string searchKeywords)
+        public static void SendSlackMessage(HttpClient client, string message, string searchKeywords)
         {
             var soundManager = new SoundManager();
             var sound = soundManager.RunAsync(message).Result;
@@ -102,6 +102,31 @@ namespace TextFunction
             };
 
             client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
+        }
+
+        public static void SendSlackFile(string message, string searchKeywords)
+        {
+            var soundManager = new SoundManager();
+            var sound = soundManager.RunAsync(message).Result;
+
+            var soundSlackMessage = new SlackFileUpload
+            {
+                token = "xoxp-427248014679-455820998496-465747936244-39400adb02b358f39f0212551635f47f",
+                channels = "messflix",
+                title = message,
+
+                file = new File {
+
+                    Title = $"Click here to listen to {searchKeywords}",
+                    UrlPrivate = new Uri($"https://{sound.Url}")
+                    
+                },
+                filetype = "mp3",
+            };
+
+            var client = new HttpClient();
+            client.PostAsync("https://slack.com/api/files.upload", )
+            client.PostAsync(_slackMessageWebHook, soundSlackMessage);
         }
     }
 }
