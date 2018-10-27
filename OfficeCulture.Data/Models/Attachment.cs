@@ -36,7 +36,7 @@ namespace OfficeCulture.Data.Models
         public Field[] Fields { get; set; }
 
         [JsonProperty("image_url")]
-        public Uri ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
 
         [JsonProperty("thumb_url")]
         public Uri ThumbUrl { get; set; }

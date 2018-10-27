@@ -16,7 +16,7 @@ namespace TextFunction
 {
     public static class HackMcr
     {
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
@@ -77,13 +77,15 @@ namespace TextFunction
                 {
                     new Attachment
                     {
-                       
-                        ImageUrl = new Uri($"https://{objGiphy.data.FirstOrDefault().url}")
+                       Text = string.Empty,
+                        ImageUrl = objGiphy.data.FirstOrDefault().url
                     }
                 }
             };
 
             client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
+            //var slackManager = new SlackManager();
+            //await slackManager.RunAsync(soundSlackMessage);
         }
 
         public static async void SendSlackFile(string message, string searchKeywords)
