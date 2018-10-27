@@ -4,8 +4,13 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.13" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OfficeCulture.Luis\OfficeCulture.Luis.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OfficeCulture.Data\OfficeCulture.Data.csproj" />
     <ProjectReference Include="..\OfficeCulture.GiphyFunction\OfficeCulture.GiphyFunction.csproj" />
     <ProjectReference Include="..\OfficeCulture.Sounds\OfficeCulture.Sounds.csproj" />
   </ItemGroup>
