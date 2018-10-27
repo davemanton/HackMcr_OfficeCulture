@@ -60,10 +60,10 @@ namespace OfficeCulture.Data.Models
         public string Username { get; set; }
 
         [JsonProperty("url_private")]
-        public Uri UrlPrivate { get; set; }
+        public string UrlPrivate { get; set; }
 
         [JsonProperty("url_private_download")]
-        public Uri UrlPrivateDownload { get; set; }
+        public string UrlPrivateDownload { get; set; }
 
         [JsonProperty("thumb_64")]
         public Uri Thumb64 { get; set; }

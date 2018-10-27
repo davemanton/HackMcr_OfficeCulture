@@ -46,10 +46,16 @@
   <ItemGroup>
     <Compile Include="Extensions\HttpContentExtensions.cs" />
     <Compile Include="Manager\ExampleManager.cs" />
+    <Compile Include="Manager\SlackManager.cs" />
     <Compile Include="Manager\SoundManager.cs" />
     <Compile Include="Model\Sound.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\OfficeCulture.Data\OfficeCulture.Data.csproj">
+      <Project>{CD0C639F-FF9B-42F0-9108-5DB66FA653F6}</Project>
+      <Name>OfficeCulture.Data</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

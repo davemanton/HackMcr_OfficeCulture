@@ -52,6 +52,7 @@ namespace TextFunction
 
             SendTextMessage(client, content, searchKeywords);
             SendSlackMessage(client, content, searchKeywords);
+            SendSlackFile(content, searchKeywords);
 
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
@@ -84,18 +85,32 @@ namespace TextFunction
 
             client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessage);
 
-            var giphySlackMessage = new SlackMessage
+        public static async void SendSlackFile(string message, string searchKeywords)
+        {
+            //get sound
+            var soundManager = new SoundManager();
+            var sound = soundManager.RunAsync(message).Result;
+
+            //turn into slack file upload
+            var soundSlackMessage = new SlackFileUpload
             {
-                text = message,
-                attachments = new List<Attachment> {
-                    new Attachment
-                    {
-                        ImageUrl = new Uri($"https://{objGiphy.data.FirstOrDefault().url}")
-                    }
+                token = "xoxp-427248014679-455820998496-465747936244-39400adb02b358f39f0212551635f47f",
+                channels = "GDPNDBESX",
+                title = message,
+                filetype = "mp3",
+                file = new File {
+
+                    Title = $"Click here to listen to {searchKeywords}",
+                    UrlPrivate = $"https://{sound.Url}",
+                    UrlPrivateDownload =$"https://{sound.Url}"
                 }
             };
 
-            client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
+            // upload to slack via api
+            var slackManager = new SlackManager();
+            await slackManager.RunAsync(soundSlackMessage);
+            
+            //client.PostAsync(_slackMessageWebHook, soundSlackMessage);
         }
     }
 }
