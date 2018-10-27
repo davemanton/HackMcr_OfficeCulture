@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OfficeCulture.Data.Models;
 using OfficeCulture.Sounds.Extensions;
-using OfficeCulture.Sounds.Models;
 
 namespace OfficeCulture.Sounds.Manager
 {
-    public class SlackManager
+    public class SlackFileManager
     {
         private readonly HttpClient _client = new HttpClient();
         
@@ -27,14 +26,11 @@ namespace OfficeCulture.Sounds.Manager
         public async Task RunAsync(SlackFileUpload slackFileUpload)
         {
             _client.BaseAddress = new Uri("https://slack.com");
-            _client.DefaultRequestHeaders.Accept.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("multipart/form-data"));
 
             try
             {
                 // Post the slack file
-                var response = await PostFileAsync(slackFileUpload);
+                 await PostFileAsync(slackFileUpload);
             }
             catch (Exception e)
             {

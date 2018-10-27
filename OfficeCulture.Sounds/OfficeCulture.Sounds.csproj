@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="Extensions\HttpContentExtensions.cs" />
     <Compile Include="Manager\ExampleManager.cs" />
-    <Compile Include="Manager\SlackManager.cs" />
+    <Compile Include="Manager\SlackFileManager.cs" />
     <Compile Include="Manager\SoundManager.cs" />
     <Compile Include="Model\Sound.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

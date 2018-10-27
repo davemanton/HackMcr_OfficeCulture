@@ -11,16 +11,21 @@ using OfficeCulture.Data.Models;
 using OfficeCulture.GiphyFunction.Manager;
 using OfficeCulture.Sounds.Manager;
 using System.Collections.Generic;
+using Microsoft.Azure.Documents.Client;
 
 namespace TextFunction
 {
     public static class HackMcr
     {
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req,
+            TraceWriter log)
         {
+            
+
             log.Info("C# HTTP trigger function processed a request.");
 
             // parse query parameter
@@ -54,6 +59,11 @@ namespace TextFunction
             SendSlackMessage(client, content, searchKeywords);
             SendSlackFile(content, searchKeywords);
 
+            const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
+            const string PrimaryKey = "TrMpg5jbBZN1MWJnZ68SqIbv2sgkWm1G23xrEhBdpWFFa5KYMQl6XpCVlzxN1xauA45w0sDx5iHEgC4NKqSn3w==";
+            DocumentClient docClient = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
+            var response = await docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("ToDoList", "Messages"), new { Message = content, SearchKeywords = searchKeywords, Timestamp = DateTime.UtcNow });
+
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
 
@@ -61,31 +71,31 @@ namespace TextFunction
         public static void SendTextMessage(HttpClient client, string from, string searchKeywords)
         {
             if (!string.IsNullOrWhiteSpace(from) && !string.IsNullOrWhiteSpace(searchKeywords))
-                client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re giphin about {searchKeywords}");
+                client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re giphin on about {searchKeywords}");
         }
 
-        public static void SendSlackMessage(HttpClient client, string message, string searchKeywords)
+        public static async Task SendSlackMessage(HttpClient client, string message, string searchKeywords)
         {
-           
             var giphyManager = new GiphyManager();
-            var objGiphy = giphyManager.RunAsync(message).Result;
-
-            var giphySlackMessage = new SlackMessage
+            var giphy = await giphyManager.RunAsync(message);
+            if (giphy.data.Any())
             {
-                text = message,
-                attachments = new List<Attachment>
-                {
-                    new Attachment
-                    {
-                       Text = string.Empty,
-                        ImageUrl = objGiphy.data.FirstOrDefault().url
-                    }
-                }
-            };
+                var datum = giphy.data.FirstOrDefault();
+                var imageUrl = datum.images.original.url;
 
-            client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
-            //var slackManager = new SlackManager();
-            //await slackManager.RunAsync(soundSlackMessage);
+                var giphySlackMessage = new SlackMessage
+                {
+                    text = message,
+                    attachments = new List<Attachment> { new Attachment
+                        {
+                            Text = message,                            
+                            ImageUrl = new Uri(imageUrl)
+                        }
+                    }
+                };
+
+                await client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
+            }
         }
 
         public static async void SendSlackFile(string message, string searchKeywords)
@@ -93,28 +103,35 @@ namespace TextFunction
             //get sound
             var soundManager = new SoundManager();
             var sound = soundManager.RunAsync(message).Result;
-
-            var giphyManager = new GiphyManager();
-            var objGiphy = giphyManager.RunAsync(message).Result;
+            
             //turn into slack file upload
+            //var soundSlackMessage = new SlackFileUpload
+            //{
+            //    token = "xoxp-465245447568-465981698178-465985666258-c2ff53ae821cdca8820458d7982e2b37",
+            //    channels = "CDP77D8JC",
+            //    title = message,
+            //    filetype = "mp3",
+            //    contentType = "multipart/form-data",
+            //    file = new File
+            //    {
+            //        Mimetype = "audio/mpeg",
+            //        Title = $"Click here to listen to {searchKeywords}",
+            //        UrlPrivate = $"https:{sound.Url}",
+            //        UrlPrivateDownload =$"https:{sound.Url}"
+            //    }
+            //};
+
             var soundSlackMessage = new SlackFileUpload
             {
-                token = "xoxp-465245447568-465981698178-465378397473-8bba6c4351e4be8c633413dce8a9278e",
+                token = "xoxp-465245447568-465981698178-465907776675-f387ae03163e674dd443902cae1b0c93",
                 channels = "CDP77D8JC",
-                title = message,
-                filetype = "mp3",
-                file = new File {
-
-                    Title = $"Click here to listen to {searchKeywords}",
-                    UrlPrivate = $"https://{sound.Url}",
-                    UrlPrivateDownload =$"https://{sound.Url}"
-                }
+                filename = "test.mp3",
+                filetype = "mp3"
             };
 
             // upload to slack via api
-            var slackManager = new SlackManager();
-            await slackManager.RunAsync(soundSlackMessage);
-
+            var slackFileManager = new SlackFileManager();
+            await slackFileManager.RunAsync(soundSlackMessage);
         }
     }
 }

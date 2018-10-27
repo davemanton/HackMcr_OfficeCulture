@@ -12,7 +12,10 @@ namespace OfficeCulture.Data.Models
         public string channels { get; set; }
         public File file { get; set; }
         public string filetype { get; set; }
+
+        public string filename { get; set; }
         public string initial_comment { get; set; }
         public string title { get; set; }
+        public string contentType { get; set; }
     }
 }
