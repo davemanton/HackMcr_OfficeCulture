@@ -49,15 +49,15 @@ namespace TextFunction
             var soundManager = new SoundManager();
             var sound = soundManager.RunAsync(query).Result;
             
-            var soundSlackMessage = new SoundSlackMessage()
+            var soundSlackMessage = new SoundSlackMessage
             {
-                Attachments = new[] { new Attachment()
+                Attachments = new[] { new Attachment
                     {
-                        AuthorName = query,
-                        Text = query,
-                        TitleLink = new Uri(sound.Url),
+                        AuthorName = "Authorname " + query,
+                        TitleLink = new Uri("http://www.google.com?q=Thisisatitlelink"),
+                        Text = sound.Url,
                         AuthorLink = new Uri(sound.Url),
-                        ImageUrl = new Uri(sound.Url)
+                        ImageUrl = new Uri("https://media1.giphy.com/media/s2qXK8wAvkHTO/giphy.gif?cid=3640f6095bd498e6786c494e67100c67")
                     }
                 }
             };
