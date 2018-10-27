@@ -2,18 +2,15 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
-using Newtonsoft.Json;
 using OfficeCulture.Sounds.Manager;
 
 namespace TextFunction
 {
     public static class HackMcr
     {
-        private static readonly HttpClient _client = new HttpClient();
         private static string _slackWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
@@ -40,8 +37,9 @@ namespace TextFunction
             {
                 text = query
             };
+            HttpClient client = new HttpClient();
 
-            _client.PostAsJsonAsync(_slackWebHook, slackMessage);
+            client.PostAsJsonAsync(_slackWebHook, slackMessage);
         }
 
         public static void SendSoundTextMessage(string query)
@@ -61,8 +59,8 @@ namespace TextFunction
                     }
                 }
             };
-
-            _client.PostAsJsonAsync(_slackWebHook, soundSlackMessage);
+            HttpClient client = new HttpClient();
+            client.PostAsJsonAsync(_slackWebHook, soundSlackMessage);
         }
     }
 
