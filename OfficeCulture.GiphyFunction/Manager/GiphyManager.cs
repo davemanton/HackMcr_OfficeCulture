@@ -14,7 +14,7 @@ namespace OfficeCulture.GiphyFunction.Manager
     {
         private readonly HttpClient _client = new HttpClient();
         private string _giphyKey = "2dpYagXIKeSFSCNP3uIBoLlVAdHsseJ1";
-        private string _giphyUrl = "https://api.giphy.com/v1/giphy/";
+        private string _giphyUrl = "https://api.giphy.com/v1/stickers/";
         private string _giphyEndpoint = "search";
         private string _giphyLimit = "1";
         private string _giphyRating = "pg";
