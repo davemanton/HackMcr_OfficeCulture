@@ -16,7 +16,7 @@ namespace TextFunction
 {
     public static class HackMcr
     {
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
