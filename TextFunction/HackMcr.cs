@@ -27,18 +27,19 @@ namespace TextFunction
             log.Info("C# HTTP trigger function processed a request.");
 
             // parse query parameter
-            string content = req.GetQueryNameValuePairs()
+            var message = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "content", true) == 0)
                 .Value;
 
-            string from = req.GetQueryNameValuePairs()
+            var from = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "from", true) == 0)
                 .Value;
 
             var luisClient = new LuisClient();
-            var luisData = await luisClient.AnalyseText(content);
+            var luisData = await luisClient.AnalyseText(message);
 
             // bold out entity pieces in original message
+            var content = message;
             if (luisData.Entities != null)
             {
                 var counter = 0;
@@ -63,7 +64,7 @@ namespace TextFunction
             var response = await docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("ToDoList", "Messages"),
                 new
                 {
-                    Message = content,
+                    Message = message,
                     SearchKeywords = searchKeywords,
                     Sound = $"https:{soundUrl}",
                     Gif = imageUrl,
@@ -78,7 +79,7 @@ namespace TextFunction
         {
             if (string.IsNullOrWhiteSpace(searchKeywords))
             {
-                searchKeywords = "Luis is available right now, but if you leave a message, he will get back to you";
+                searchKeywords = "something we can't understand yet";
             }
 
             if (!string.IsNullOrWhiteSpace(from))
@@ -118,7 +119,7 @@ namespace TextFunction
         {
             //get sound
             var soundManager = new SoundManager();
-            var sound = await soundManager.RunAsync(message);
+            var sound = await soundManager.RunAsync(string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords);
             var soundUrl = sound.Url;
             //turn into slack file upload
             //var soundSlackMessage = new SlackFileUpload
