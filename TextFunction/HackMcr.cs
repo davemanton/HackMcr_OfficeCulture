@@ -66,24 +66,25 @@ namespace TextFunction
 
         public static void SendSlackMessage(HttpClient client, string message, string searchKeywords)
         {
-            var soundManager = new SoundManager();
-            var sound = soundManager.RunAsync(message).Result;
+           
             var giphyManager = new GiphyManager();
             var objGiphy = giphyManager.RunAsync(message).Result;
 
-            var soundSlackMessage = new SlackMessage
+            var giphySlackMessage = new SlackMessage
             {
                 text = message,
-                attachments = new List<Attachment> {
+                attachments = new List<Attachment>
+                {
                     new Attachment
                     {
-                        Title = $"Click here to listen to {searchKeywords}",
-                        TitleLink = $"https://{sound.Url}"
+                       
+                        ImageUrl = new Uri($"https://{objGiphy.data.FirstOrDefault().url}")
                     }
                 }
             };
 
-            client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessage);
+            client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
+        }
 
         public static async void SendSlackFile(string message, string searchKeywords)
         {
@@ -91,6 +92,8 @@ namespace TextFunction
             var soundManager = new SoundManager();
             var sound = soundManager.RunAsync(message).Result;
 
+            var giphyManager = new GiphyManager();
+            var objGiphy = giphyManager.RunAsync(message).Result;
             //turn into slack file upload
             var soundSlackMessage = new SlackFileUpload
             {
@@ -109,6 +112,7 @@ namespace TextFunction
             // upload to slack via api
             var slackManager = new SlackManager();
             await slackManager.RunAsync(soundSlackMessage);
+
         }
     }
 }
