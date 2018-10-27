@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextFunction", "TextFunctio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeCulture.Sounds", "OfficeCulture.Sounds\OfficeCulture.Sounds.csproj", "{5C822991-7401-41FF-9954-6C59510CAF12}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfficeCulture.Luis", "OfficeCulture.Luis\OfficeCulture.Luis.csproj", "{B7E321B8-B65D-4BF3-AFFB-28A2763881F3}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeCulture.Data", "OfficeCulture.Data\OfficeCulture.Data.csproj", "{CD0C639F-FF9B-42F0-9108-5DB66FA653F6}"
 EndProject
 Global
@@ -23,6 +25,10 @@ Global
 		{5C822991-7401-41FF-9954-6C59510CAF12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C822991-7401-41FF-9954-6C59510CAF12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C822991-7401-41FF-9954-6C59510CAF12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7E321B8-B65D-4BF3-AFFB-28A2763881F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7E321B8-B65D-4BF3-AFFB-28A2763881F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7E321B8-B65D-4BF3-AFFB-28A2763881F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7E321B8-B65D-4BF3-AFFB-28A2763881F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD0C639F-FF9B-42F0-9108-5DB66FA653F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD0C639F-FF9B-42F0-9108-5DB66FA653F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD0C639F-FF9B-42F0-9108-5DB66FA653F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
