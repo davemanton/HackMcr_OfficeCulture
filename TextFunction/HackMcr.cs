@@ -68,22 +68,23 @@ namespace TextFunction
             
             var soundSlackMessage = new SoundSlackMessage
             {
-                //Attachments = new[] { new Attachment
-                //    {
-                //        AuthorName = "Authorname " + query,
-                //        TitleLink = new Uri("http://www.google.com?q=Thisisatitlelink"),
-                //        Text = sound.Url,
-                //        AuthorLink = new Uri(sound.Url),
-                //        ImageUrl = new Uri("https://media1.giphy.com/media/s2qXK8wAvkHTO/giphy.gif?cid=3640f6095bd498e6786c494e67100c67"),
-                        
-                //    }
-                //}
+                File = new File
+                {
+                    Filetype = "mp3",
+                    Name = sound.Name,
+                    Title = sound.Name,
+                    UrlPrivate = new Uri(sound.Url),
+                    Id = sound.Id.ToString(),
+                    UrlPrivateDownload = new Uri(sound.Url),
+                    IsExternal = true
+                }
             };
 
             client.PostAsJsonAsync(_slackWebHook, soundSlackMessage);
         }
     }
 
+    // DM - move into data layer
     public class SlackMessage
     {
         public string text { get; set; }
