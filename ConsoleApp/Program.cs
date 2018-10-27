@@ -8,7 +8,6 @@ namespace ConsoleApp
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            Giphy.Program.Main(args);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using OfficeCulture.GiphyFunction.Manager;
 using OfficeCulture.Sounds.Manager;
 
 namespace TextFunction
@@ -20,7 +21,7 @@ namespace TextFunction
             string content = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "content", true) == 0)
                 .Value;
-
+           
             var soundManager = new SoundManager();
             var soundUrl = soundManager.RunAsync("dog").Result.Url;
             var client = new HttpClient();
