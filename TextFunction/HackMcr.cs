@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using OfficeCulture.Sounds.Manager;
 
 namespace TextFunction
 {
@@ -20,11 +21,14 @@ namespace TextFunction
                 .FirstOrDefault(q => string.Compare(q.Key, "content", true) == 0)
                 .Value;
 
+            var soundManager = new SoundManager();
+            var soundUrl = soundManager.RunAsync("dog").Result.Url;
             var client = new HttpClient();
 
             var slackMessage = new SlackMessage
             {
-                text = content
+                text = content,
+                SoundUrl = soundUrl
             };
 
             client.PostAsJsonAsync("https://hooks.slack.com/services/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", slackMessage);
@@ -40,5 +44,8 @@ namespace TextFunction
     public class SlackMessage
     {
         public string text { get; set; }
+        public string SoundUrl { get; set; }
+        public string GiphyUrl { get; set; }
+
     }
 }

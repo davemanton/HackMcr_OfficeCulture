@@ -12,22 +12,12 @@ namespace OfficeCulture.Sounds.Manager
 {
     public class SoundManager
     {
-        private static readonly HttpClient Client = new HttpClient();
-
-        static void Main()
-        {
-            RunAsync("dog").GetAwaiter().GetResult();
-        }
-
-        static void ShowSound(Sound sound)
-        {
-            EventLog.WriteEntry("SoundLog | ", "The sound name is " + sound.Name);
-        }
-
-        static async Task<List<Sound>> GetSoundsAsync(string query)
+        private readonly HttpClient _client = new HttpClient();
+        
+        public async Task<List<Sound>> GetSoundsAsync(string query)
         {
             List<Sound> sounds = null;
-            HttpResponseMessage response = await Client.GetAsync($"/api/sounds?q={query}");
+            HttpResponseMessage response = await _client.GetAsync($"/api/sounds?q={query}");
             if (response.IsSuccessStatusCode)
             {
                 sounds = await response.Content.ReadAsJsonAsync<List<Sound>>();
@@ -35,11 +25,11 @@ namespace OfficeCulture.Sounds.Manager
             return sounds;
         }
 
-        public static async Task RunAsync(string query)
+        public async Task<Sound> RunAsync(string query)
         {
-            Client.BaseAddress = new Uri("https://soundy.top");
-            Client.DefaultRequestHeaders.Accept.Clear();
-            Client.DefaultRequestHeaders.Accept.Add(
+            _client.BaseAddress = new Uri("https://soundy.top");
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
 
             try
@@ -49,15 +39,14 @@ namespace OfficeCulture.Sounds.Manager
                 if (sounds != null)
                 {
                     // Return the first sound in listing
-                    ShowSound(sounds.FirstOrDefault());
+                    return sounds.FirstOrDefault();
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                // Error
             }
-
-            Console.ReadLine();
+            return null;
         }
     }
 }
