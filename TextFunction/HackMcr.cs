@@ -65,7 +65,7 @@ namespace TextFunction
                 {
                     Message = content,
                     SearchKeywords = searchKeywords,
-                    Sound = soundUrl,
+                    Sound = $"https:{soundUrl}",
                     Gif = imageUrl,
                     Timestamp = DateTime.Now
                 });
