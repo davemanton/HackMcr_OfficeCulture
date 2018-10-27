@@ -33,7 +33,7 @@ namespace TextFunction
 
             client.PostAsJsonAsync("https://hooks.slack.com/services/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", slackMessage);
 
-            client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to=447950580480&content=Hello+World");
+            //client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to=447950580480&content=Hello+World");
 
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
