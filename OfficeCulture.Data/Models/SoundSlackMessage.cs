@@ -1,8 +1,13 @@
-﻿using System.Net.Mail;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-public partial class SoundSlackMessage
+namespace OfficeCulture.Data.Models
 {
-    [JsonProperty("attachments")]
-    public Attachment[] Attachments { get; set; }
+    public partial class SoundSlackMessage
+    {
+        [JsonProperty("ok")]
+        public bool Ok { get; set; }
+
+        [JsonProperty("file")]
+        public File File { get; set; }
+    }
 }

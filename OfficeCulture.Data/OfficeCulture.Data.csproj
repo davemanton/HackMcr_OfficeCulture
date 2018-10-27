@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="Models\Field.cs" />
     <Compile Include="Models\Attachment.cs" />
+    <Compile Include="Models\GiphySlackMessage.cs" />
+    <Compile Include="Models\File.cs" />
     <Compile Include="Models\SoundSlackMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

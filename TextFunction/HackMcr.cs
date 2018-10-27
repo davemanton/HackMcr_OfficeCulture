@@ -5,6 +5,7 @@ using System.Net.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using OfficeCulture.Data.Models;
 using OfficeCulture.Sounds.Manager;
 
 namespace TextFunction
@@ -49,15 +50,16 @@ namespace TextFunction
             
             var soundSlackMessage = new SoundSlackMessage
             {
-                Attachments = new[] { new Attachment
-                    {
-                        AuthorName = "Authorname " + query,
-                        TitleLink = new Uri("http://www.google.com?q=Thisisatitlelink"),
-                        Text = sound.Url,
-                        AuthorLink = new Uri(sound.Url),
-                        ImageUrl = new Uri("https://media1.giphy.com/media/s2qXK8wAvkHTO/giphy.gif?cid=3640f6095bd498e6786c494e67100c67")
-                    }
-                }
+                //Attachments = new[] { new Attachment
+                //    {
+                //        AuthorName = "Authorname " + query,
+                //        TitleLink = new Uri("http://www.google.com?q=Thisisatitlelink"),
+                //        Text = sound.Url,
+                //        AuthorLink = new Uri(sound.Url),
+                //        ImageUrl = new Uri("https://media1.giphy.com/media/s2qXK8wAvkHTO/giphy.gif?cid=3640f6095bd498e6786c494e67100c67"),
+                        
+                //    }
+                //}
             };
             HttpClient client = new HttpClient();
             client.PostAsJsonAsync(_slackWebHook, soundSlackMessage);
