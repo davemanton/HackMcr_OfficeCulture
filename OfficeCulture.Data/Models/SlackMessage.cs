@@ -10,6 +10,6 @@ namespace OfficeCulture.Data.Models
     {
         public string text { get; set; }
         public File file { get; set; }
-        public Attachment[] attachments { get; set; }
+        public List<Attachment> attachments { get; set; }
     }
 }

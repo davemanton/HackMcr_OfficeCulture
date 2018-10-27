@@ -9,12 +9,14 @@ using Microsoft.Azure.WebJobs.Host;
 using OfficeCulture.Luis;
 using OfficeCulture.Data.Models;
 using OfficeCulture.Sounds.Manager;
+using System.Collections.Generic;
 
 namespace TextFunction
 {
     public static class HackMcr
     {
-        private static string _slackWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackFileWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
@@ -69,19 +71,16 @@ namespace TextFunction
             var soundSlackMessage = new SlackMessage
             {
                 text = message,
-                file = new File
-                {
-                    Filetype = "mp3",
-                    Name = sound.Name,
-                    Title = sound.Name,
-                    UrlPrivate = new Uri($"https:{sound.Url}"),
-                    Id = sound.Id.ToString(),
-                    UrlPrivateDownload = new Uri($"https:{sound.Url}"),
-                    IsExternal = true
+                attachments = new List<Attachment> {
+                    new Attachment
+                    {
+                        Title = $"Click here to listen to {searchKeywords}",
+                        TitleLink = $"https://{sound.Url}"
+                    }
                 }
             };
 
-            client.PostAsJsonAsync(_slackWebHook, soundSlackMessage);
+            client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessage);
         }
     }
 }

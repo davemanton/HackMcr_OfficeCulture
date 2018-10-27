@@ -27,7 +27,7 @@ namespace OfficeCulture.Data.Models
         public string Title { get; set; }
 
         [JsonProperty("title_link")]
-        public Uri TitleLink { get; set; }
+        public string TitleLink { get; set; }
 
         [JsonProperty("text")]
         public string Text { get; set; }
