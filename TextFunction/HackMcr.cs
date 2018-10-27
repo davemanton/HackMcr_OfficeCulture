@@ -20,7 +20,7 @@ namespace TextFunction
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
-            
+
             // parse query parameter
             string content = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "content", true) == 0)
@@ -34,10 +34,10 @@ namespace TextFunction
             var luisData = await luisClient.AnalyseText(content);
 
             // bold out entity pieces in original message
-            if(luisData.Entities != null)
+            if (luisData.Entities != null)
             {
                 var counter = 0;
-                foreach(var entity in luisData.Entities)
+                foreach (var entity in luisData.Entities)
                 {
                     content = content.Insert(entity.StartIndex + counter++, "*");
                     content = content.Insert(entity.EndIndex + counter++ + 1, "*");
@@ -49,33 +49,34 @@ namespace TextFunction
             var client = new HttpClient();
 
             SendTextMessage(client, content, searchKeywords);
-            SendSoundTextMessage(client, content);            
-            
+            SendSoundTextMessage(client, content, searchKeywords);
+
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
 
-        
+
         public static void SendTextMessage(HttpClient client, string from, string searchKeywords)
         {
             if (!string.IsNullOrWhiteSpace(from) && !string.IsNullOrWhiteSpace(searchKeywords))
                 client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re giphin about {searchKeywords}");
         }
 
-        public static void SendSoundTextMessage(HttpClient client, string message)
+        public static void SendSoundTextMessage(HttpClient client, string message, string searchKeywords)
         {
             var soundManager = new SoundManager();
             var sound = soundManager.RunAsync(message).Result;
-            
-            var soundSlackMessage = new SoundSlackMessage
+
+            var soundSlackMessage = new SlackMessage
             {
-                File = new File
+                text = message,
+                file = new File
                 {
                     Filetype = "mp3",
                     Name = sound.Name,
                     Title = sound.Name,
-                    UrlPrivate = new Uri(sound.Url),
+                    UrlPrivate = new Uri($"https:{sound.Url}"),
                     Id = sound.Id.ToString(),
-                    UrlPrivateDownload = new Uri(sound.Url),
+                    UrlPrivateDownload = new Uri($"https:{sound.Url}"),
                     IsExternal = true
                 }
             };
@@ -83,12 +84,5 @@ namespace TextFunction
             client.PostAsJsonAsync(_slackWebHook, soundSlackMessage);
         }
     }
-
-    // DM - move into data layer
-    public class SlackMessage
-    {
-        public string text { get; set; }
-    }
-        
 }
 
