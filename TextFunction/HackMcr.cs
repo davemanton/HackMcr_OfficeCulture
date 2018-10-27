@@ -82,7 +82,7 @@ namespace TextFunction
             client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessage);
         }
 
-        public static void SendSlackFile(HttpClient client, string message, string searchKeywords)
+        public static void SendSlackFile(string message, string searchKeywords)
         {
             var soundManager = new SoundManager();
             var sound = soundManager.RunAsync(message).Result;
@@ -102,7 +102,9 @@ namespace TextFunction
                 filetype = "mp3",
             };
 
-            client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessage);
+            var client = new HttpClient();
+            client.PostAsync("https://slack.com/api/files.upload", )
+            client.PostAsync(_slackMessageWebHook, soundSlackMessage);
         }
     }
 }
