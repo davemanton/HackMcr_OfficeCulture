@@ -19,7 +19,7 @@ namespace TextFunction
     {
         private static string _imageUrl;
         private static string _soundUrl;
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
         public static async Task<HttpResponseMessage> Run(
