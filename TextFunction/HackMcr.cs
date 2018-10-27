@@ -51,8 +51,6 @@ namespace TextFunction
             var client = new HttpClient();
 
             SendTextMessage(client, content, searchKeywords);
-            SendSoundTextMessage(client, content, searchKeywords);
-            SendGiphyTextMessage(client,content,searchKeywords);
             SendSlackMessage(client, content, searchKeywords);
 
             return req.CreateResponse(HttpStatusCode.OK, content);
@@ -69,6 +67,8 @@ namespace TextFunction
         {
             var soundManager = new SoundManager();
             var sound = soundManager.RunAsync(message).Result;
+            var giphyManager = new GiphyManager();
+            var objGiphy = giphyManager.RunAsync(message).Result;
 
             var soundSlackMessage = new SlackMessage
             {
@@ -83,12 +83,6 @@ namespace TextFunction
             };
 
             client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessage);
-        }
-
-        public static void SendGiphyTextMessage(HttpClient client, string message, string searchKeywords)
-        {
-            var giphyManager = new GiphyManager();
-            var objGiphy = giphyManager.RunAsync(message).Result;
 
             var giphySlackMessage = new SlackMessage
             {
@@ -96,37 +90,12 @@ namespace TextFunction
                 attachments = new List<Attachment> {
                     new Attachment
                     {
-                       ImageUrl = new Uri($"https://{objGiphy.data.FirstOrDefault().url}")
+                        ImageUrl = new Uri($"https://{objGiphy.data.FirstOrDefault().url}")
                     }
                 }
             };
 
             client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
-        }
-
-        public static void SendSlackFile(string message, string searchKeywords)
-        {
-            var soundManager = new SoundManager();
-            var sound = soundManager.RunAsync(message).Result;
-
-            var soundSlackMessage = new SlackFileUpload
-            {
-                token = "xoxp-427248014679-455820998496-465747936244-39400adb02b358f39f0212551635f47f",
-                channels = "messflix",
-                title = message,
-
-                file = new File {
-
-                    Title = $"Click here to listen to {searchKeywords}",
-                    UrlPrivate = new Uri($"https://{sound.Url}")
-                    
-                },
-                filetype = "mp3",
-            };
-
-            var client = new HttpClient();
-            client.PostAsync("https://slack.com/api/files.upload", )
-            client.PostAsync(_slackMessageWebHook, soundSlackMessage);
         }
     }
 }
