@@ -53,6 +53,7 @@ namespace TextFunction
 
             SendTextMessage(client, content, searchKeywords);
             SendSoundTextMessage(client, content, searchKeywords);
+            SendGiphyTextMessage(client,content,searchKeywords);
 
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
@@ -82,6 +83,25 @@ namespace TextFunction
             };
 
             client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessage);
+        }
+
+        public static void SendGiphyTextMessage(HttpClient client, string message, string searchKeywords)
+        {
+            var giphyManager = new GiphyManager();
+            var objGiphy = giphyManager.RunAsync(message).Result;
+
+            var giphySlackMessage = new SlackMessage
+            {
+                text = message,
+                attachments = new List<Attachment> {
+                    new Attachment
+                    {
+                       ImageUrl = new Uri($"https://{objGiphy.data.FirstOrDefault().url}")
+                    }
+                }
+            };
+
+            client.PostAsJsonAsync(_slackMessageWebHook, giphySlackMessage);
         }
     }
 }
