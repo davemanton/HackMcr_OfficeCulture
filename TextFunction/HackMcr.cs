@@ -91,7 +91,7 @@ namespace TextFunction
         public static async Task<string> SendSlackMessage(HttpClient client, string message, string searchKeywords)
         {
             var giphyManager = new GiphyManager();
-            var giphy = await giphyManager.RunAsync(message);
+            var giphy = await giphyManager.RunAsync(string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords);
             if (!giphy.data.Any())
                 return null;
 
