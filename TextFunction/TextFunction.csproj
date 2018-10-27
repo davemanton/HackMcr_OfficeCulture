@@ -6,6 +6,7 @@
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.13" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OfficeCulture.Data\OfficeCulture.Data.csproj" />
     <ProjectReference Include="..\OfficeCulture.Sounds\OfficeCulture.Sounds.csproj" />
   </ItemGroup>
   <ItemGroup>
