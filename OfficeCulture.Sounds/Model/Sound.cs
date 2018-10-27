@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using Newtonsoft.Json;
 
-namespace OfficeCulture.Sounds.Models
+namespace OfficeCulture.Sounds.Model
 {
     public partial class Sound
     {

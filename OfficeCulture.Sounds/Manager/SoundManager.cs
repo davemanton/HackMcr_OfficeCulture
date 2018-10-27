@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using OfficeCulture.Sounds.Extensions;
-using OfficeCulture.Sounds.Models;
+using OfficeCulture.Sounds.Model;
 
 namespace OfficeCulture.Sounds.Manager
 {

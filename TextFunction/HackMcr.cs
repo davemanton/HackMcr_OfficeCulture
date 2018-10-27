@@ -16,7 +16,7 @@ namespace TextFunction
 {
     public static class HackMcr
     {
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
@@ -95,18 +95,28 @@ namespace TextFunction
             var giphyManager = new GiphyManager();
             var objGiphy = giphyManager.RunAsync(message).Result;
             //turn into slack file upload
+            //var soundSlackMessage = new SlackFileUpload
+            //{
+            //    token = "xoxp-465245447568-465981698178-465985666258-c2ff53ae821cdca8820458d7982e2b37",
+            //    channels = "CDP77D8JC",
+            //    title = message,
+            //    filetype = "mp3",
+            //    contentType = "multipart/form-data",
+            //    file = new File
+            //    {
+            //        Mimetype = "audio/mpeg",
+            //        Title = $"Click here to listen to {searchKeywords}",
+            //        UrlPrivate = $"https:{sound.Url}",
+            //        UrlPrivateDownload =$"https:{sound.Url}"
+            //    }
+            //};
+
             var soundSlackMessage = new SlackFileUpload
             {
-                token = "xoxp-465245447568-465981698178-465378397473-8bba6c4351e4be8c633413dce8a9278e",
+                token = "xoxp-465245447568-465981698178-465985666258-c2ff53ae821cdca8820458d7982e2b37",
                 channels = "CDP77D8JC",
-                title = message,
-                filetype = "mp3",
-                file = new File {
-
-                    Title = $"Click here to listen to {searchKeywords}",
-                    UrlPrivate = $"https://{sound.Url}",
-                    UrlPrivateDownload =$"https://{sound.Url}"
-                }
+                filename = "test.mp3",
+                filetype = "mp3"
             };
 
             // upload to slack via api
