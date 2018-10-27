@@ -54,8 +54,8 @@ namespace TextFunction
             var client = new HttpClient();
 
             SendTextMessage(client, from, searchKeywords);
-            var soundUrl = await SendSlackMessage(client, content, searchKeywords);
-            var imageUrl = await SendSlackFile(content, searchKeywords);
+            var imageUrl = await SendSlackMessage(client, content, searchKeywords);
+            var soundUrl = await SendSlackFile(content, searchKeywords);
 
             const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
             const string PrimaryKey = "TrMpg5jbBZN1MWJnZ68SqIbv2sgkWm1G23xrEhBdpWFFa5KYMQl6XpCVlzxN1xauA45w0sDx5iHEgC4NKqSn3w==";
