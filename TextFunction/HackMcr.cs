@@ -16,7 +16,7 @@ namespace TextFunction
 {
     public static class HackMcr
     {
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
@@ -66,7 +66,6 @@ namespace TextFunction
 
         public static void SendSlackMessage(HttpClient client, string message, string searchKeywords)
         {
-           
             var giphyManager = new GiphyManager();
             var objGiphy = giphyManager.RunAsync(message).Result;
 
@@ -77,7 +76,6 @@ namespace TextFunction
                 {
                     new Attachment
                     {
-                       
                         ImageUrl = new Uri($"https://{objGiphy.data.FirstOrDefault().url}")
                     }
                 }
@@ -91,9 +89,7 @@ namespace TextFunction
             //get sound
             var soundManager = new SoundManager();
             var sound = soundManager.RunAsync(message).Result;
-
-            var giphyManager = new GiphyManager();
-            var objGiphy = giphyManager.RunAsync(message).Result;
+            
             //turn into slack file upload
             //var soundSlackMessage = new SlackFileUpload
             //{
@@ -113,16 +109,15 @@ namespace TextFunction
 
             var soundSlackMessage = new SlackFileUpload
             {
-                token = "xoxp-465245447568-465981698178-465985666258-c2ff53ae821cdca8820458d7982e2b37",
+                token = "xoxp-465245447568-465981698178-465832627924-3661482ff2516e5c2141553762a34c4e",
                 channels = "CDP77D8JC",
                 filename = "test.mp3",
                 filetype = "mp3"
             };
 
             // upload to slack via api
-            var slackManager = new SlackManager();
-            await slackManager.RunAsync(soundSlackMessage);
-
+            var slackFileManager = new SlackFileManager();
+            await slackFileManager.RunAsync(soundSlackMessage);
         }
     }
 }

@@ -12,7 +12,7 @@ using OfficeCulture.Sounds.Extensions;
 
 namespace OfficeCulture.Sounds.Manager
 {
-    public class SlackManager
+    public class SlackFileManager
     {
         private readonly HttpClient _client = new HttpClient();
         
