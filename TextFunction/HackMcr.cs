@@ -11,16 +11,21 @@ using OfficeCulture.Data.Models;
 using OfficeCulture.GiphyFunction.Manager;
 using OfficeCulture.Sounds.Manager;
 using System.Collections.Generic;
+using Microsoft.Azure.Documents.Client;
 
 namespace TextFunction
 {
     public static class HackMcr
     {
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req,
+            TraceWriter log)
         {
+            
+
             log.Info("C# HTTP trigger function processed a request.");
 
             // parse query parameter
@@ -54,6 +59,11 @@ namespace TextFunction
             SendSlackMessage(client, content, searchKeywords);
             SendSlackFile(content, searchKeywords);
 
+            const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
+            const string PrimaryKey = "TrMpg5jbBZN1MWJnZ68SqIbv2sgkWm1G23xrEhBdpWFFa5KYMQl6XpCVlzxN1xauA45w0sDx5iHEgC4NKqSn3w==";
+            DocumentClient docClient = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
+            var response = await docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("ToDoList", "Messages"), new { Message = content, SearchKeywords = searchKeywords, Timestamp = DateTime.UtcNow });
+
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
 
@@ -61,7 +71,7 @@ namespace TextFunction
         public static void SendTextMessage(HttpClient client, string from, string searchKeywords)
         {
             if (!string.IsNullOrWhiteSpace(from) && !string.IsNullOrWhiteSpace(searchKeywords))
-                client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re giphin about {searchKeywords}");
+                client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re giphin on about {searchKeywords}");
         }
 
         public static void SendSlackMessage(HttpClient client, string message, string searchKeywords)
