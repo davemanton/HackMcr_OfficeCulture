@@ -55,7 +55,7 @@ namespace TextFunction
 
             var client = new HttpClient();
 
-            SendTextMessage(client, content, searchKeywords);
+            SendTextMessage(client, from, searchKeywords);
             await SendSlackMessage(client, content, searchKeywords);
             await SendSlackFile(content, searchKeywords);
 
@@ -74,8 +74,16 @@ namespace TextFunction
 
         public static void SendTextMessage(HttpClient client, string from, string searchKeywords)
         {
-            if (!string.IsNullOrWhiteSpace(from) && !string.IsNullOrWhiteSpace(searchKeywords))
-                client.GetAsync("https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re giphin on about {searchKeywords}");
+            if (string.IsNullOrWhiteSpace(searchKeywords))
+            {
+                searchKeywords = "Luis is available right now, but if you leave a message, he will get back to you";
+            }
+
+            if (!string.IsNullOrWhiteSpace(from))
+            {
+                var url = $"https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re+giphin+on+about+{searchKeywords}";
+                client.GetAsync(url);
+            }
         }
 
         public static async Task SendSlackMessage(HttpClient client, string message, string searchKeywords)
