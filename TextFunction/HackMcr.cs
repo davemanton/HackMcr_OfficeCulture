@@ -94,8 +94,8 @@ namespace TextFunction
             //turn into slack file upload
             var soundSlackMessage = new SlackFileUpload
             {
-                token = "xoxp-427248014679-455820998496-465747936244-39400adb02b358f39f0212551635f47f",
-                channels = "GDPNDBESX",
+                token = "xoxp-465245447568-465981698178-465378397473-8bba6c4351e4be8c633413dce8a9278e",
+                channels = "CDP77D8JC",
                 title = message,
                 filetype = "mp3",
                 file = new File {
@@ -109,8 +109,6 @@ namespace TextFunction
             // upload to slack via api
             var slackManager = new SlackManager();
             await slackManager.RunAsync(soundSlackMessage);
-            
-            //client.PostAsync(_slackMessageWebHook, soundSlackMessage);
         }
     }
 }
