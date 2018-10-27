@@ -130,7 +130,16 @@ namespace TextFunction
                 token = "xoxp-465245447568-465812080884-465912753411-37f8b9cb7372ef62d8a3990062e9b3da",
                 channels = "CDP77D8JC",
                 filename = "test.mp3",
-                filetype = "mp3"
+                filetype = "mp3",
+                file = new File()
+                {
+                    Id = sound.Id.ToString(),
+                    Name = sound.Name,
+                    Mimetype = "audio/mpeg",
+                    Filetype = "mp3",
+                    UrlPrivate = sound.Url,
+                    UrlPrivateDownload = sound.Url,
+                }
             };
 
             // upload to slack via api
