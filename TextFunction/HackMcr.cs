@@ -66,7 +66,8 @@ namespace TextFunction
             const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
             const string PrimaryKey = "TrMpg5jbBZN1MWJnZ68SqIbv2sgkWm1G23xrEhBdpWFFa5KYMQl6XpCVlzxN1xauA45w0sDx5iHEgC4NKqSn3w==";
             DocumentClient docClient = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
-            var response = await docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("ToDoList", "Messages"), new { Message = content, SearchKeywords = searchKeywords, Timestamp = DateTime.UtcNow });
+            var response = await docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("ToDoList", "Messages"), 
+                new { Message = content, SearchKeywords = searchKeywords, Timestamp = DateTime.Now });
 
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
