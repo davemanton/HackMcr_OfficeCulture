@@ -15,17 +15,17 @@ using Microsoft.Azure.Documents.Client;
 
 namespace TextFunction
 {
-    public static class HackMcr
+    public class HackMcr
     {
-        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
+        private static string _imageUrl;
+        private static string _soundUrl;
+        private static string _slackMessageWebHook = "https://hooks.slack.com/services/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";
 
         [FunctionName("hackmcr")]
         public static async Task<HttpResponseMessage> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req,
             TraceWriter log)
         {
-            
-
             log.Info("C# HTTP trigger function processed a request.");
 
             // parse query parameter
@@ -56,8 +56,12 @@ namespace TextFunction
             var client = new HttpClient();
 
             SendTextMessage(client, content, searchKeywords);
-            SendSlackMessage(client, content, searchKeywords);
-            SendSlackFile(content, searchKeywords);
+            await SendSlackMessage(client, content, searchKeywords);
+            await SendSlackFile(content, searchKeywords);
+
+            //pick em up here, do as you please
+            var soundUrl = _soundUrl;
+            var imageUrl = _imageUrl;
 
             const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
             const string PrimaryKey = "TrMpg5jbBZN1MWJnZ68SqIbv2sgkWm1G23xrEhBdpWFFa5KYMQl6XpCVlzxN1xauA45w0sDx5iHEgC4NKqSn3w==";
@@ -81,7 +85,7 @@ namespace TextFunction
             if (giphy.data.Any())
             {
                 var datum = giphy.data.FirstOrDefault();
-                var imageUrl = datum.images.original.url;
+                _imageUrl = datum.images.original.url;
 
                 var giphySlackMessage = new SlackMessage
                 {
@@ -89,7 +93,7 @@ namespace TextFunction
                     attachments = new List<Attachment> { new Attachment
                         {
                             Text = message,                            
-                            ImageUrl = new Uri(imageUrl)
+                            ImageUrl = new Uri(_imageUrl)
                         }
                     }
                 };
@@ -98,12 +102,12 @@ namespace TextFunction
             }
         }
 
-        public static async void SendSlackFile(string message, string searchKeywords)
+        public static async Task SendSlackFile(string message, string searchKeywords)
         {
             //get sound
             var soundManager = new SoundManager();
-            var sound = soundManager.RunAsync(message).Result;
-            
+            var sound = await soundManager.RunAsync(message);
+            _soundUrl = sound.Url;
             //turn into slack file upload
             //var soundSlackMessage = new SlackFileUpload
             //{
@@ -123,7 +127,7 @@ namespace TextFunction
 
             var soundSlackMessage = new SlackFileUpload
             {
-                token = "xoxp-465245447568-465981698178-465907776675-f387ae03163e674dd443902cae1b0c93",
+                token = "xoxp-465245447568-465812080884-465912753411-37f8b9cb7372ef62d8a3990062e9b3da",
                 channels = "CDP77D8JC",
                 filename = "test.mp3",
                 filetype = "mp3"
