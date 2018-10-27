@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextFunction", "TextFunction\TextFunction.csproj", "{D6502F8B-46E1-4790-A135-88C0A959BAB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextFunction", "TextFunction\TextFunction.csproj", "{D6502F8B-46E1-4790-A135-88C0A959BAB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeCulture.Sounds", "OfficeCulture.Sounds\OfficeCulture.Sounds.csproj", "{5C822991-7401-41FF-9954-6C59510CAF12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D6502F8B-46E1-4790-A135-88C0A959BAB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6502F8B-46E1-4790-A135-88C0A959BAB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6502F8B-46E1-4790-A135-88C0A959BAB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C822991-7401-41FF-9954-6C59510CAF12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C822991-7401-41FF-9954-6C59510CAF12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C822991-7401-41FF-9954-6C59510CAF12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C822991-7401-41FF-9954-6C59510CAF12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
