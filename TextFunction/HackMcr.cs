@@ -137,20 +137,28 @@ namespace TextFunction
             //    }
             //};
 
+           
+            using (var webClient = new WebClient())
+            {
+                webClient.DownloadFile($"http:{sound.Url}", @"c:\myfile.mp3");
+            }
+
             var soundSlackMessage = new SlackFileUpload
             {
                 token = "xoxp-465245447568-465812080884-465912753411-37f8b9cb7372ef62d8a3990062e9b3da",
                 channels = "CDP77D8JC",
-                filename = "test.mp3",
+                filename = @"c:\myfile.mp3",
                 filetype = "mp3",
+                title = "test",
                 file = new File()
                 {
                     Id = sound.Id.ToString(),
                     Name = sound.Name,
+                    Title = "file",
                     Mimetype = "audio/mpeg",
-                    Filetype = "mp3",
-                    UrlPrivate = sound.Url,
-                    UrlPrivateDownload = sound.Url,
+                    Filetype = "mpg",
+                    UrlPrivate = @"c:\myfile.mp3",
+                    UrlPrivateDownload = @"c:\myfile.mp3"
                 }
             };
 
