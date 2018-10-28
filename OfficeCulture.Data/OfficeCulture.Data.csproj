@@ -50,6 +50,7 @@
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\SlackFileUpload.cs" />
     <Compile Include="Models\SlackMessage.cs" />
+    <Compile Include="Models\SlackMessageWithAction.cs" />
     <Compile Include="Models\SoundSlackMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

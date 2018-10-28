@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using Microsoft.Azure.Documents.Client;
 using OfficeCulture.Chuck;
 using OfficeCulture.Chuck.Coin;
+using Action = OfficeCulture.Data.Models.Action;
+using SlackAttachment = OfficeCulture.Data.Models.SlackAttachment;
 
 namespace TextFunction
 {
@@ -56,9 +58,9 @@ namespace TextFunction
 
             var client = new HttpClient();
             SendGiphinMessage(client, from, searchKeywords);
-            SentimentMessage(client, from , luisData, searchKeywords);
+            SentimentMessage(client, from, luisData, searchKeywords);
             var imageUrl = await SendSlackMessage(client, content, searchKeywords);
-            var soundUrl = await SendSlackFile(content, searchKeywords);
+            var soundUrl = await SendSlackSoundMessage(client, content, searchKeywords);
 
             const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
             const string PrimaryKey = "TrMpg5jbBZN1MWJnZ68SqIbv2sgkWm1G23xrEhBdpWFFa5KYMQl6XpCVlzxN1xauA45w0sDx5iHEgC4NKqSn3w==";
@@ -83,7 +85,7 @@ namespace TextFunction
             switch (luisData.SentimentAnalysis.Label)
             {
                 case "positive":
-                    sentimentMessage = $"You seemed happy you should probable calm down and remember a bitcoin is worth �";
+                    sentimentMessage = $"You seemed happy you should probable calm down and remember a bitcoin is worth £";
                     break;
                 case "negative":
                     sentimentMessage = $"You seemed sad, how bout a chuck norris fact to cheer you up: ";
@@ -169,60 +171,73 @@ namespace TextFunction
             return imageUrl;
         }
 
-        public static async Task<string> SendSlackFile(string message, string searchKeywords)
+        public static async Task<string> SendSlackSoundMessage(HttpClient client, string message, string searchKeywords)
         {
-            //get sound
             var soundManager = new SoundManager();
             var sound = await soundManager.RunAsync(string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords);
+
             var soundUrl = sound.Url;
-            //turn into slack file upload
-            //var soundSlackMessage = new SlackFileUpload
-            //{
-            //    token = "xoxp-465245447568-465981698178-465985666258-c2ff53ae821cdca8820458d7982e2b37",
-            //    channels = "CDP77D8JC",
-            //    title = message,
-            //    filetype = "mp3",
-            //    contentType = "multipart/form-data",
-            //    file = new File
-            //    {
-            //        Mimetype = "audio/mpeg",
-            //        Title = $"Click here to listen to {searchKeywords}",
-            //        UrlPrivate = $"https:{sound.Url}",
-            //        UrlPrivateDownload =$"https:{sound.Url}"
-            //    }
-            //};
 
-           
-            using (var webClient = new WebClient())
+            var soundSlackMessageWithAction = new SlackMessageWithAction()
             {
-                webClient.DownloadFile($"http:{sound.Url}", @"c:\myfile.mp3");
-            }
+                Text = "",
+                Channel = "CDP77D8JC",
+                Attachments = new List<SlackAttachment> { new SlackAttachment
+                    {
+                        Fallback = "Who needs Spotify?!",
+                        Title = "Who needs Spotify?!",
+                        Color = "#3AA3E3",
+                        Actions = new List<Action> { new Action
+                            {
+                                Type = "button",
+                                Name = "playSound",
+                                Value = "playSound",
+                                Text = $"🔊 Play the {sound.Name} sound",
+                                Url = new Uri($"https:{soundUrl}"),
+                                Style = "primary"
+                            }
+                        }
 
-            var soundSlackMessage = new SlackFileUpload
-            {
-                token = "xoxp-465245447568-465812080884-465912753411-37f8b9cb7372ef62d8a3990062e9b3da",
-                channels = "CDP77D8JC",
-                filename = @"c:\myfile.mp3",
-                filetype = "mp3",
-                title = "test",
-                file = new File()
-                {
-                    Id = sound.Id.ToString(),
-                    Name = sound.Name,
-                    Title = "file",
-                    Mimetype = "audio/mpeg",
-                    Filetype = "mpg",
-                    UrlPrivate = @"c:\myfile.mp3",
-                    UrlPrivateDownload = @"c:\myfile.mp3"
+                    }
+
                 }
             };
 
-            // upload to slack via api
-            var slackFileManager = new SlackFileManager();
-            slackFileManager.RunAsync(soundSlackMessage);
+        client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessageWithAction);
 
             return soundUrl;
         }
-    }
+
+    //public static async Task<string> SendSlackFile(string message, string searchKeywords)
+    //{
+    //    //get sound
+    //    var soundManager = new SoundManager();
+    //    var sound = await soundManager.RunAsync(string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords);
+    //    var soundUrl = sound.Url;
+    //    //turn into slack file upload
+    //    var soundSlackMessage = new SlackFileUpload
+    //    {
+    //        token = "xoxp-465245447568-465981698178-465985666258-c2ff53ae821cdca8820458d7982e2b37",
+    //        channels = "CDP77D8JC",
+    //        title = message,
+    //        filetype = "mp3",
+    //        contentType = "multipart/form-data",
+    //        file = new File
+    //        {
+    //            Mimetype = "audio/mpeg",
+    //            Title = $"Click here to listen to {searchKeywords}",
+    //            UrlPrivate = $"https:{sound.Url}",
+    //            UrlPrivateDownload = $"https:{sound.Url}"
+    //        }
+    //    };
+
+
+    //    // upload to slack via api
+    //    var slackFileManager = new SlackFileManager();
+    //    slackFileManager.RunAsync(soundSlackMessage);
+
+    //    return soundUrl;
+    //}
+}
 }
 
