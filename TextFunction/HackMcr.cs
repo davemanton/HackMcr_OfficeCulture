@@ -12,6 +12,8 @@ using OfficeCulture.GiphyFunction.Manager;
 using OfficeCulture.Sounds.Manager;
 using System.Collections.Generic;
 using Microsoft.Azure.Documents.Client;
+using OfficeCulture.Chuck;
+using OfficeCulture.Chuck.Coin;
 
 namespace TextFunction
 {
@@ -53,8 +55,8 @@ namespace TextFunction
             var searchKeywords = string.Join(" ", luisData.Entities.Select(x => x.Entity));
 
             var client = new HttpClient();
-
-            SendTextMessage(client, from, searchKeywords);
+            SendGiphinMessage(client, from, searchKeywords);
+            SentimentMessage(client, from , luisData, searchKeywords);
             var imageUrl = await SendSlackMessage(client, content, searchKeywords);
             var soundUrl = await SendSlackFile(content, searchKeywords);
 
@@ -68,23 +70,75 @@ namespace TextFunction
                     SearchKeywords = searchKeywords,
                     Sound = $"https:{soundUrl}",
                     Gif = imageUrl,
+                    Sentiment = luisData.SentimentAnalysis.Label,
                     Timestamp = DateTime.Now
                 });
 
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
 
+        private static async Task SentimentMessage(HttpClient client, string from, LuisData luisData, string searchKeywords)
+        {
+            string sentimentMessage;
+            switch (luisData.SentimentAnalysis.Label)
+            {
+                case "positive":
+                    sentimentMessage = $"You seemed happy you should probable calm down and remember a bitcoin is worth £";
+                    break;
+                case "negative":
+                    sentimentMessage = $"You seemed sad, how bout a chuck norris fact to cheer you up: ";
+                    break;
+                default:
+                    sentimentMessage = $"We couldn't figure out how you were feeling... here's a quote to inspire you: ";
+                    break;
+            }
 
-        public static void SendTextMessage(HttpClient client, string from, string searchKeywords)
+            switch (luisData.SentimentAnalysis.Label)
+            {
+                case "positive":
+                    var coinClient = new BitcoinClient();
+                    var coinValue = await coinClient.GetPrice();
+                    sentimentMessage = sentimentMessage + coinValue;
+                    break;
+                case "negative":
+                    var chuckClient = new ChuckClient();
+                    var joke = await chuckClient.GetJoke();
+                    sentimentMessage = sentimentMessage + ": " + joke.value;
+                    break;
+                default:
+                    var quoteClient = new QuoteClient();
+                    var quote = await quoteClient.GetQuote();
+                    sentimentMessage = sentimentMessage + " " + quote;
+                    break;
+            }
+
+            SendTextMessage(client, from, sentimentMessage);
+        }
+
+        private static async Task<string> GetChuckJoke()
+        {
+            var chuckClient = new ChuckClient();
+
+            var data = await chuckClient.GetJoke();
+
+            return data.value;
+        }
+
+        public static void SendGiphinMessage(HttpClient client, string from, string searchKeywords)
         {
             if (string.IsNullOrWhiteSpace(searchKeywords))
             {
                 searchKeywords = "something we can't understand yet";
             }
 
+            SendTextMessage(client, from, $"You%27re giphin on about {searchKeywords}");
+        }
+
+        public static void SendTextMessage(HttpClient client, string from, string content)
+        {
             if (!string.IsNullOrWhiteSpace(from))
             {
-                var url = $"https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re+giphin+on+about+{searchKeywords}";
+                var url = $"https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content={content}";
                 client.GetAsync(url);
             }
         }
