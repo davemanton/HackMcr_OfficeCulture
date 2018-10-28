@@ -88,6 +88,7 @@ namespace TextFunction
                     Sound = $"https:{soundUrl}",
                     Gif = imageUrl,
                     Sentiment = luisData.SentimentAnalysis.Label,
+                    Translations = translations,
                     Timestamp = DateTime.Now
                 });
 

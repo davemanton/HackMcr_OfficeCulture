@@ -51,6 +51,7 @@ namespace TextFunction
         public string Sound { get; set; }
         public string Gif { get; set; }
         public string Sentiment { get; set; }
+        public Dictionary<string, string> Translations { get; set; }
         public DateTime Timestamp { get; set; }
     }
 }
