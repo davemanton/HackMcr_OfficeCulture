@@ -159,7 +159,7 @@ namespace TextFunction
 
         public static async Task<string> SendSlackMessage(HttpClient client, string message, string searchKeywords)
         {
-            searchKeywords = string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords
+            searchKeywords = string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords;
             var giphyManager = new GiphyManager();
             var giphy = await giphyManager.RunAsync(searchKeywords);
             if (!giphy.data.Any())
