@@ -61,17 +61,17 @@ namespace TextFunction
 
             var client = new HttpClient();
             SendGiphinMessage(client, from, searchKeywords);
-            SentimentMessage(client, from , luisData, searchKeywords);
-           
-            var translations = await translationTask;   
-            foreach(var translation in translations)
+            SentimentMessage(client, from, luisData, searchKeywords);
+
+            var translations = await translationTask;
+            foreach (var translation in translations)
             {
-                SendTextMessage(client, from, $"It seemed like time to learn {translation.Key}, you said {translation.Value}");
+                SendTextMessage(client, from, $"It seemed like time to learn {translation.Key}, you said: {translation.Value}");
             }
 
             var random = new Random();
-
-            var imageUrl = await SendSlackMessage(client, content, searchKeywords);
+            var isTranslation = random.Next(5) > 2;
+            var imageUrl = await SendSlackMessage(client, content, searchKeywords, translations, isTranslation);
             var soundUrl = await SendSlackSoundMessage(client, content, searchKeywords);
 
             const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
@@ -157,7 +157,7 @@ namespace TextFunction
             }
         }
 
-        public static async Task<string> SendSlackMessage(HttpClient client, string message, string searchKeywords)
+        public static async Task<string> SendSlackMessage(HttpClient client, string message, string searchKeywords, Dictionary<string, string> translations, bool isTranslation)
         {
             searchKeywords = string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords;
             var giphyManager = new GiphyManager();
@@ -170,7 +170,7 @@ namespace TextFunction
 
             var giphySlackMessage = new SlackMessage
             {
-                text = message,
+                text = isTranslation ? $"Office Brainteaser - What did I say?? {translations.First().Value}" : message,
                 attachments = new List<Attachment> { new Attachment
                         {
                             Text = searchKeywords,
@@ -216,41 +216,10 @@ namespace TextFunction
                 }
             };
 
-        client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessageWithAction);
+            client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessageWithAction);
 
             return soundUrl;
         }
-
-    //public static async Task<string> SendSlackFile(string message, string searchKeywords)
-    //{
-    //    //get sound
-    //    var soundManager = new SoundManager();
-    //    var sound = await soundManager.RunAsync(string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords);
-    //    var soundUrl = sound.Url;
-    //    //turn into slack file upload
-    //    var soundSlackMessage = new SlackFileUpload
-    //    {
-    //        token = "xoxp-465245447568-465981698178-465985666258-c2ff53ae821cdca8820458d7982e2b37",
-    //        channels = "CDP77D8JC",
-    //        title = message,
-    //        filetype = "mp3",
-    //        contentType = "multipart/form-data",
-    //        file = new File
-    //        {
-    //            Mimetype = "audio/mpeg",
-    //            Title = $"Click here to listen to {searchKeywords}",
-    //            UrlPrivate = $"https:{sound.Url}",
-    //            UrlPrivateDownload = $"https:{sound.Url}"
-    //        }
-    //    };
-
-
-    //    // upload to slack via api
-    //    var slackFileManager = new SlackFileManager();
-    //    slackFileManager.RunAsync(soundSlackMessage);
-
-    //    return soundUrl;
-    //}
-}
+    }
 }
 
