@@ -67,12 +67,12 @@ namespace TextFunction
             var translations = await translationTask;
             foreach (var translation in translations)
             {
-                SendTextMessage(client, from, $"It seemed like time to learn {translation.Key}, you said {translation.Value}");
+                SendTextMessage(client, from, $"It seemed like time to learn {translation.Key}, you said: {translation.Value}");
             }
 
             var random = new Random();
-
-            var imageUrl = await SendSlackMessage(client, content, searchKeywords);
+            var isTranslation = random.Next(5) > 2;
+            var imageUrl = await SendSlackMessage(client, content, searchKeywords, translations, isTranslation);
             var soundUrl = await SendSlackSoundMessage(client, content, searchKeywords);
 
             
@@ -160,7 +160,7 @@ namespace TextFunction
             }
         }
 
-        public static async Task<string> SendSlackMessage(HttpClient client, string message, string searchKeywords)
+        public static async Task<string> SendSlackMessage(HttpClient client, string message, string searchKeywords, Dictionary<string, string> translations, bool isTranslation)
         {
             searchKeywords = string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords;
             var giphyManager = new GiphyManager();
@@ -173,7 +173,7 @@ namespace TextFunction
 
             var giphySlackMessage = new SlackMessage
             {
-                text = message,
+                text = isTranslation ? $"Office Brainteaser - What did I say?? {translations.First().Value}" : message,
                 attachments = new List<Attachment> { new Attachment
                         {
                             Text = searchKeywords,
