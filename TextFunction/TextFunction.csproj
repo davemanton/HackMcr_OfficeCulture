@@ -15,6 +15,7 @@
     <ProjectReference Include="..\OfficeCulture.Data\OfficeCulture.Data.csproj" />
     <ProjectReference Include="..\OfficeCulture.GiphyFunction\OfficeCulture.GiphyFunction.csproj" />
     <ProjectReference Include="..\OfficeCulture.Sounds\OfficeCulture.Sounds.csproj" />
+    <ProjectReference Include="..\OfficeCulture.Translate\OfficeCulture.Translate.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />

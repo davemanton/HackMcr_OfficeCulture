@@ -16,6 +16,7 @@ using OfficeCulture.Chuck;
 using OfficeCulture.Chuck.Coin;
 using Action = OfficeCulture.Data.Models.Action;
 using SlackAttachment = OfficeCulture.Data.Models.SlackAttachment;
+using OfficeCulture.Translate;
 
 namespace TextFunction
 {
@@ -28,12 +29,14 @@ namespace TextFunction
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req,
             TraceWriter log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
 
             // parse query parameter
             var message = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "content", true) == 0)
                 .Value;
+
+            var translationClient = new TranslateClient();
+            var translationTask = translationClient.GetTranslation(message);
 
             var from = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "from", true) == 0)
@@ -58,7 +61,16 @@ namespace TextFunction
 
             var client = new HttpClient();
             SendGiphinMessage(client, from, searchKeywords);
-            SentimentMessage(client, from, luisData, searchKeywords);
+            SentimentMessage(client, from , luisData, searchKeywords);
+           
+            var translations = await translationTask;   
+            foreach(var translation in translations)
+            {
+                SendTextMessage(client, from, $"It seemed like time to learn {translation.Key}, you said {translation.Value}");
+            }
+
+            var random = new Random();
+
             var imageUrl = await SendSlackMessage(client, content, searchKeywords);
             var soundUrl = await SendSlackSoundMessage(client, content, searchKeywords);
 
@@ -147,8 +159,9 @@ namespace TextFunction
 
         public static async Task<string> SendSlackMessage(HttpClient client, string message, string searchKeywords)
         {
+            searchKeywords = string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords
             var giphyManager = new GiphyManager();
-            var giphy = await giphyManager.RunAsync(string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords);
+            var giphy = await giphyManager.RunAsync(searchKeywords);
             if (!giphy.data.Any())
                 return null;
 
@@ -160,7 +173,7 @@ namespace TextFunction
                 text = message,
                 attachments = new List<Attachment> { new Attachment
                         {
-                            Text = message,
+                            Text = searchKeywords,
                             ImageUrl = new Uri(imageUrl)
                         }
                     }
