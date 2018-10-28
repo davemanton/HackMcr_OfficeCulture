@@ -50,6 +50,7 @@ namespace TextFunction
         public string SearchKeywords { get; set; }
         public string Sound { get; set; }
         public string Gif { get; set; }
+        public string Sentiment { get; set; }
         public DateTime Timestamp { get; set; }
     }
 }
