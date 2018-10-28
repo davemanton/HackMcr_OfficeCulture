@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Extensions\HttpContentExtensions.cs" />
     <Compile Include="Manager\SpotifyManager.cs" />
     <Compile Include="Model\Spotify.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -23,9 +24,17 @@ namespace OfficeCulture.Spotify.Manager
 
             Model.Spotify spotify = null;
 
+           
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "BQBWRpXJKghAfPXOBAoQNjosaj-eiYJLKrk2FUkKztReNJ6cqE4x6D0xuWyY4tw8d1Y3q3XbIIgQOH6uVrlHapTt2DkBF_-U01QoCctIWMvNo6fZNaLTJjOKUTeoNCpSL0UJ1SnFoHU-vKuQBcb73G4TNS3uyw1_32Xpj-wYESBeWSlEb29JHvXHpll9d4i4V2mXd3mcz0cSzKeP5ymZKmEF7Pd2vfsb6NfLLVx1Kp_172NsW9fFlMN6Q_CR5bunqe43tkptWC-ECxXl3hiQ");
             HttpResponseMessage response = await _client.GetAsync(
                 $"{_spotifyEndpoint}?q={query}&type={_spotifyType}");
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                HttpResponseMessage authenticateResponse = await _client.GetAsync(
+                    $"{_spotifyEndpoint}?q={query}&type={_spotifyType}");
+            }
 
             if (response.IsSuccessStatusCode)
             {

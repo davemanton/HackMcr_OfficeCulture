@@ -74,7 +74,7 @@ namespace TextFunction
             var isTranslation = random.Next(5) > 2;
             var imageUrl = await SendSlackMessage(client, content, searchKeywords, translations, isTranslation);
             var soundUrl = await SendSlackSoundMessage(client, content, searchKeywords);
-
+            GetSpotifyTracks(client, content, searchKeywords);
             
 
             const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
@@ -224,12 +224,12 @@ namespace TextFunction
             return soundUrl;
         }
 
-        public static async void GetSpotifyTracks(HttpClient client, string message, string searchKeywords)
+        public static void GetSpotifyTracks(HttpClient client, string message, string searchKeywords)
 
         {
             searchKeywords = string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords;
             var spotifyManager = new SpotifyManager();
-            var spotify = await spotifyManager.RunAsync(searchKeywords);
+            var spotify = spotifyManager.RunAsync(searchKeywords);
             
 
             //client.PostAsJsonAsync(_slackMessageWebHook, spotifySlackMessage);
