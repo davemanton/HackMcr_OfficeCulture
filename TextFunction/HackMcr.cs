@@ -12,6 +12,8 @@ using OfficeCulture.GiphyFunction.Manager;
 using OfficeCulture.Sounds.Manager;
 using System.Collections.Generic;
 using Microsoft.Azure.Documents.Client;
+using OfficeCulture.Chuck;
+using OfficeCulture.Chuck.Coin;
 
 namespace TextFunction
 {
@@ -27,18 +29,19 @@ namespace TextFunction
             log.Info("C# HTTP trigger function processed a request.");
 
             // parse query parameter
-            string content = req.GetQueryNameValuePairs()
+            var message = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "content", true) == 0)
                 .Value;
 
-            string from = req.GetQueryNameValuePairs()
+            var from = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "from", true) == 0)
                 .Value;
 
             var luisClient = new LuisClient();
-            var luisData = await luisClient.AnalyseText(content);
+            var luisData = await luisClient.AnalyseText(message);
 
             // bold out entity pieces in original message
+            var content = message;
             if (luisData.Entities != null)
             {
                 var counter = 0;
@@ -52,10 +55,10 @@ namespace TextFunction
             var searchKeywords = string.Join(" ", luisData.Entities.Select(x => x.Entity));
 
             var client = new HttpClient();
-
-            SendTextMessage(client, from, searchKeywords);
-            var soundUrl = await SendSlackMessage(client, content, searchKeywords);
-            var imageUrl = await SendSlackFile(content, searchKeywords);
+            SendGiphinMessage(client, from, searchKeywords);
+            SentimentMessage(client, from , luisData, searchKeywords);
+            var imageUrl = await SendSlackMessage(client, content, searchKeywords);
+            var soundUrl = await SendSlackFile(content, searchKeywords);
 
             const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
             const string PrimaryKey = "TrMpg5jbBZN1MWJnZ68SqIbv2sgkWm1G23xrEhBdpWFFa5KYMQl6XpCVlzxN1xauA45w0sDx5iHEgC4NKqSn3w==";
@@ -63,27 +66,79 @@ namespace TextFunction
             var response = await docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri("ToDoList", "Messages"),
                 new
                 {
-                    Message = content,
+                    Message = message,
                     SearchKeywords = searchKeywords,
-                    Sound = soundUrl,
+                    Sound = $"https:{soundUrl}",
                     Gif = imageUrl,
+                    Sentiment = luisData.SentimentAnalysis.Label,
                     Timestamp = DateTime.Now
                 });
 
             return req.CreateResponse(HttpStatusCode.OK, content);
         }
 
+        private static async Task SentimentMessage(HttpClient client, string from, LuisData luisData, string searchKeywords)
+        {
+            string sentimentMessage;
+            switch (luisData.SentimentAnalysis.Label)
+            {
+                case "positive":
+                    sentimentMessage = $"You seemed happy you should probable calm down and remember a bitcoin is worth £";
+                    break;
+                case "negative":
+                    sentimentMessage = $"You seemed sad, how bout a chuck norris fact to cheer you up: ";
+                    break;
+                default:
+                    sentimentMessage = $"We couldn't figure out how you were feeling... here's a quote to inspire you: ";
+                    break;
+            }
 
-        public static void SendTextMessage(HttpClient client, string from, string searchKeywords)
+            switch (luisData.SentimentAnalysis.Label)
+            {
+                case "positive":
+                    var coinClient = new BitcoinClient();
+                    var coinValue = await coinClient.GetPrice();
+                    sentimentMessage = sentimentMessage + coinValue;
+                    break;
+                case "negative":
+                    var chuckClient = new ChuckClient();
+                    var joke = await chuckClient.GetJoke();
+                    sentimentMessage = sentimentMessage + ": " + joke.value;
+                    break;
+                default:
+                    var quoteClient = new QuoteClient();
+                    var quote = await quoteClient.GetQuote();
+                    sentimentMessage = sentimentMessage + " " + quote;
+                    break;
+            }
+
+            SendTextMessage(client, from, sentimentMessage);
+        }
+
+        private static async Task<string> GetChuckJoke()
+        {
+            var chuckClient = new ChuckClient();
+
+            var data = await chuckClient.GetJoke();
+
+            return data.value;
+        }
+
+        public static void SendGiphinMessage(HttpClient client, string from, string searchKeywords)
         {
             if (string.IsNullOrWhiteSpace(searchKeywords))
             {
-                searchKeywords = "Luis is available right now, but if you leave a message, he will get back to you";
+                searchKeywords = "something we can't understand yet";
             }
 
+            SendTextMessage(client, from, $"You%27re giphin on about {searchKeywords}");
+        }
+
+        public static void SendTextMessage(HttpClient client, string from, string content)
+        {
             if (!string.IsNullOrWhiteSpace(from))
             {
-                var url = $"https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content=You%27re+giphin+on+about+{searchKeywords}";
+                var url = $"https://api.clockworksms.com/http/send.aspx?key=a15795bf55cf6acaf6061be7af26bbb86bc22c52&to={from}&content={content}";
                 client.GetAsync(url);
             }
         }
@@ -91,7 +146,7 @@ namespace TextFunction
         public static async Task<string> SendSlackMessage(HttpClient client, string message, string searchKeywords)
         {
             var giphyManager = new GiphyManager();
-            var giphy = await giphyManager.RunAsync(message);
+            var giphy = await giphyManager.RunAsync(string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords);
             if (!giphy.data.Any())
                 return null;
 
@@ -118,7 +173,7 @@ namespace TextFunction
         {
             //get sound
             var soundManager = new SoundManager();
-            var sound = await soundManager.RunAsync(message);
+            var sound = await soundManager.RunAsync(string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords);
             var soundUrl = sound.Url;
             //turn into slack file upload
             //var soundSlackMessage = new SlackFileUpload

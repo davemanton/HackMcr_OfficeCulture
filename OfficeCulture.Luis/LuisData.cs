@@ -9,6 +9,7 @@ namespace OfficeCulture.Luis
         public string Query { get; set; }
         public IntentData TopScoringIntent { get; set; }
         public IList<EntityData> Entities { get; set; }
+        public SentimentAnalysis SentimentAnalysis { get; set; }
     }
 
     public class IntentData
@@ -23,6 +24,12 @@ namespace OfficeCulture.Luis
         public string Type { get; set; }
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
+        public double Score { get; set; }
+    }
+
+    public class SentimentAnalysis
+    {
+        public string Label { get; set; }
         public double Score { get; set; }
     }
 }
