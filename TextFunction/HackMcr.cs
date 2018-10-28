@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using Microsoft.Azure.Documents.Client;
 using OfficeCulture.Chuck;
 using OfficeCulture.Chuck.Coin;
+using OfficeCulture.Spotify.Manager;
 using Action = OfficeCulture.Data.Models.Action;
 using SlackAttachment = OfficeCulture.Data.Models.SlackAttachment;
 using OfficeCulture.Translate;
@@ -61,10 +62,10 @@ namespace TextFunction
 
             var client = new HttpClient();
             SendGiphinMessage(client, from, searchKeywords);
-            SentimentMessage(client, from , luisData, searchKeywords);
-           
-            var translations = await translationTask;   
-            foreach(var translation in translations)
+            SentimentMessage(client, from, luisData, searchKeywords);
+
+            var translations = await translationTask;
+            foreach (var translation in translations)
             {
                 SendTextMessage(client, from, $"It seemed like time to learn {translation.Key}, you said {translation.Value}");
             }
@@ -73,6 +74,8 @@ namespace TextFunction
 
             var imageUrl = await SendSlackMessage(client, content, searchKeywords);
             var soundUrl = await SendSlackSoundMessage(client, content, searchKeywords);
+
+            
 
             const string EndpointUrl = "https://hackmcr.documents.azure.com:443/";
             const string PrimaryKey = "TrMpg5jbBZN1MWJnZ68SqIbv2sgkWm1G23xrEhBdpWFFa5KYMQl6XpCVlzxN1xauA45w0sDx5iHEgC4NKqSn3w==";
@@ -216,42 +219,23 @@ namespace TextFunction
                 }
             };
 
-        client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessageWithAction);
+            client.PostAsJsonAsync(_slackMessageWebHook, soundSlackMessageWithAction);
 
             return soundUrl;
         }
 
+        public static async void GetSpotifyTracks(HttpClient client, string message, string searchKeywords)
 
-    //public static async Task<string> SendSlackFile(string message, string searchKeywords)
-    //{
-    //    //get sound
-    //    var soundManager = new SoundManager();
-    //    var sound = await soundManager.RunAsync(string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords);
-    //    var soundUrl = sound.Url;
-    //    //turn into slack file upload
-    //    var soundSlackMessage = new SlackFileUpload
-    //    {
-    //        token = "xoxp-465245447568-465981698178-465985666258-c2ff53ae821cdca8820458d7982e2b37",
-    //        channels = "CDP77D8JC",
-    //        title = message,
-    //        filetype = "mp3",
-    //        contentType = "multipart/form-data",
-    //        file = new File
-    //        {
-    //            Mimetype = "audio/mpeg",
-    //            Title = $"Click here to listen to {searchKeywords}",
-    //            UrlPrivate = $"https:{sound.Url}",
-    //            UrlPrivateDownload = $"https:{sound.Url}"
-    //        }
-    //    };
+        {
+            searchKeywords = string.IsNullOrWhiteSpace(searchKeywords) ? message : searchKeywords;
+            var spotifyManager = new SpotifyManager();
+            var spotify = await spotifyManager.RunAsync(searchKeywords);
+            
 
+            //client.PostAsJsonAsync(_slackMessageWebHook, spotifySlackMessage);
+        }
 
-    //    // upload to slack via api
-    //    var slackFileManager = new SlackFileManager();
-    //    slackFileManager.RunAsync(soundSlackMessage);
-
-    //    return soundUrl;
-    //}
-}
+       
+    }
 }
 
